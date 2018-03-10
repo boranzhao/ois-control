@@ -1,39 +1,39 @@
 clear;clc;close all;
+filename = mfilename('fullpath');
+[pathstr,name,ext] = fileparts(filename);
+addpath([pathstr '\frequency-response-data'],[pathstr '\experimental-results'] );
 
 Type = 1; % 1 for controller frequency response; 2 for tracking performance data 
 
 if Type == 1    
     for nomeaning = 1
-        load BSfilter
-        load LeadlagComp_justforcomparisonplot
-        load MuforVsGs
-        load MLPV_2by2subs_3paras
+        load Filters
+        load classical_forFRcomparison
+        load mu_forFRcomparison
+        load controller_mpdr % MLPV_2by2subs_3paras
         figure;        
-        W = logspace(0,5,10000); W=W';
-%         h = bodeplot(sysKll,{1*2*pi, 1e5*2*pi},'k-.');
-%         % Change units to Hz and make phase plot invisible
-%         setoptions(h,'FreqUnits','Hz','PhaseVisible','off');%         
+        W = logspace(0,4,10000); W=W';
         [Mag,Phase]= bode(sysKll,W*2*pi);
-        semilogx(W,20*log10(Mag(:)),'k-.'); 
+        semilogx(W,20*log10(Mag(:)),'k-.','Linewidth',1); 
         hold on;
 
 %         h = bodeplot(sysKmuR*BSfilter,{1*2*pi, 1e5*2*pi},'g--'); %,'--'
 %         setoptions(h,'FreqUnits','Hz','PhaseVisible','off');
         [Mag,Phase]= bode(sysKmuR*BSfilter,W*2*pi);
-        semilogx(W,20*log10(Mag(:)),'g--'); 
+        semilogx(W,20*log10(Mag(:)),'g--','Linewidth',1); 
         
 
-%         h = bodeplot(Kmgs{3}*BSfilter,{1*2*pi, 1e5*2*pi},'r');%
+%         h = bodeplot(Kpdr{3}*BSfilter,{1*2*pi, 1e5*2*pi},'r');%
 %         setoptions(h,'FreqUnits','Hz','PhaseVisible','off');
-        [Mag,Phase]= bode(Kmgs{3}*BSfilter,W*2*pi);
-        semilogx(W,20*log10(Mag(:)),'r'); 
+        [Mag,Phase]= bode(Kpdr{3}*BSfilter,W*2*pi);
+        semilogx(W,20*log10(Mag(:)),'r','Linewidth',1); 
 
-        clear Kmgs
-        load MLPV_2by2subs_3paras_Igw2nUncert
-%         h = bodeplot(Kmgs{3}*BSfilter,{1*2*pi, 1e5*2*pi},'b:');%,':'
+        clear Kpdr
+        load controller_mpdr_Ignore_w2n_Uncert % MLPV_2by2subs_3paras_Igw2nUncert
+%         h = bodeplot(Kpdr{3}*BSfilter,{1*2*pi, 1e5*2*pi},'b:');%,':'
 %         setoptions(h,'FreqUnits','Hz','PhaseVisible','off');
-        [Mag,Phase]= bode(Kmgs{3}*BSfilter,W*2*pi);
-        semilogx(W,20*log10(Mag(:)),'b:'); 
+        [Mag,Phase]= bode(Kpdr{3}*BSfilter,W*2*pi);
+        semilogx(W,20*log10(Mag(:)),'b:','Linewidth',1); 
         xlabel('Frequency (Hz)');
         ylabel('Magnitude (dB)'); 
 %   xlim([1e1 1e3])
@@ -46,7 +46,7 @@ if Type == 1
         goodplot;
         legend({'$K_{cla}$','$K_\mu$','$K_{M}$','$K_{M2}$'},'Interpreter','latex','Location','SouthEast')
         goodplot;
-%         print -painters -dpdf -r150 ControllerFR.pdf
+        print -painters -dpdf -r150 ControllerFR.pdf
         %% 
         figure;         
         [Mag,Phase]= bode(BSfilter,W*2*pi);
