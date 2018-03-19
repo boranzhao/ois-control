@@ -6,11 +6,11 @@ addpath([pathstr '\frequency-response-data'],[pathstr '\experimental-results'] )
 Type = 1; % 1 for controller frequency response; 2 for tracking performance data 
 
 if Type == 1    
-    for nomeaning = 1
-        load Filters
+    for nomeaning = 1        
         load classical_forFRcomparison
         load mu_forFRcomparison
         load controller_mpdr % MLPV_2by2subs_3paras
+        load Filters
         figure;        
         W = logspace(0,4,10000); W=W';
         [Mag,Phase]= bode(sysKll,W*2*pi);
@@ -22,7 +22,6 @@ if Type == 1
         [Mag,Phase]= bode(sysKmuR*BSfilter,W*2*pi);
         semilogx(W,20*log10(Mag(:)),'g--','Linewidth',1); 
         
-
 %         h = bodeplot(Kpdr{3}*BSfilter,{1*2*pi, 1e5*2*pi},'r');%
 %         setoptions(h,'FreqUnits','Hz','PhaseVisible','off');
         [Mag,Phase]= bode(Kpdr{3}*BSfilter,W*2*pi);
